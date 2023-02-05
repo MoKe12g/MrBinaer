@@ -1,3 +1,5 @@
+use std::process::exit;
+
 use sfml::graphics::RenderWindow;
 use sfml::window::Style;
 
@@ -17,5 +19,9 @@ fn main() {
         // rand ist so schlau, dass es den Ziel-Typen erkennt
         let mut game = game::new(rand::random(), 120);
         game.game_loop(&mut window);
+        if game.got_closed_by_user()
+        {
+            exit(0);
+        }
     }
 }

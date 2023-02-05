@@ -126,6 +126,10 @@ impl Game {
             current_frame += 1;
         }
     }
+
+    pub fn got_closed_by_user(&self) -> bool {
+        return self.is_stopped;
+    }
 }
 
 pub fn new(number: i8, snowman_animation_duration: i32) -> Game {
