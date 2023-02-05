@@ -7,8 +7,12 @@ pub enum SnowmanStates {
     // some times a snowman can be bored too
     Waving(i32),
     Jumping(i32),
+    TakingTopHat(i32),
+    HoldingTopHat(i32),
+    PutTopHatBackOn(i32),
     // melting the snowman
     Melting(i32),
+    ResurrectionInProgress(i32),
     // the snowman is able to become a bigger form of itself
     // the float is the targeted multiplier on the y-axis
     Shrinking(f32, i32),
