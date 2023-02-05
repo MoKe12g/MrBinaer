@@ -32,62 +32,62 @@ impl Game {
             // free snowman from his state, if it has ended
             match self.snowman_state {
                 SnowmanStates::Waving(start_frame) => {
-                    if current_frame - start_frame > self.snowman_animation_duration {
+                    if current_frame - start_frame >= self.snowman_animation_duration {
                         self.snowman_state = SnowmanStates::Idle
                     }
                 }
                 SnowmanStates::Jumping(start_frame) => {
-                    if current_frame - start_frame > self.snowman_animation_duration {
+                    if current_frame - start_frame >= self.snowman_animation_duration {
                         self.snowman_state = SnowmanStates::Idle
                     }
                 }
                 SnowmanStates::TakingTopHat(start_frame) => {
-                    if current_frame - start_frame > self.snowman_animation_duration {
+                    if current_frame - start_frame >= self.snowman_animation_duration {
                         self.snowman_state = SnowmanStates::HoldingTopHat()
                     }
                 }
                 SnowmanStates::PutTopHatBackOn(start_frame) => {
-                    if current_frame - start_frame > self.snowman_animation_duration {
+                    if current_frame - start_frame >= self.snowman_animation_duration {
                         self.snowman_state = SnowmanStates::Idle
                     }
                 }
                 SnowmanStates::Melting(start_frame) => {
-                    if current_frame - start_frame > self.snowman_animation_duration {
+                    if current_frame - start_frame >= self.snowman_animation_duration {
                         self.snowman_state = SnowmanStates::Melted
                     }
                 }
                 SnowmanStates::ResurrectionInProgress(start_frame) => {
-                    if current_frame - start_frame > self.snowman_animation_duration {
+                    if current_frame - start_frame >= self.snowman_animation_duration {
                         self.snowman_state = SnowmanStates::Idle
                     }
                 }
                 SnowmanStates::Shrinking(_, start_frame) => {
-                    if current_frame - start_frame > self.snowman_animation_duration {
+                    if current_frame - start_frame >= self.snowman_animation_duration {
                         self.snowman_state = SnowmanStates::Idle
                     }
                 }
                 SnowmanStates::Growing(amplifire, start_frame) => {
-                    if current_frame - start_frame > self.snowman_animation_duration {
+                    if current_frame - start_frame >= self.snowman_animation_duration {
                         self.snowman_state = SnowmanStates::Big(amplifire)
                     }
                 }
                 SnowmanStates::MorphingIntoAFirTree(start_frame) => {
-                    if current_frame - start_frame > self.snowman_animation_duration {
+                    if current_frame - start_frame >= self.snowman_animation_duration {
                         self.snowman_state = SnowmanStates::IsFirTree()
                     }
                 }
                 SnowmanStates::MorphingFromAFirTree(start_frame) => {
-                    if current_frame - start_frame > self.snowman_animation_duration {
+                    if current_frame - start_frame >= self.snowman_animation_duration {
                         self.snowman_state = SnowmanStates::Idle
                     }
                 }
                 SnowmanStates::DeformationToAvoidPoint(px, py, start_frame) => {
-                    if current_frame - start_frame > self.snowman_animation_duration {
+                    if current_frame - start_frame >= self.snowman_animation_duration {
                         self.snowman_state = SnowmanStates::IsDeformedToAvoidPoint(px, py);
                     }
                 }
                 SnowmanStates::ReverseDeformationToAvoidPoint(_, _, start_frame) => {
-                    if current_frame - start_frame > self.snowman_animation_duration {
+                    if current_frame - start_frame >= self.snowman_animation_duration {
                         self.snowman_state = SnowmanStates::Idle
                     }
                 }
