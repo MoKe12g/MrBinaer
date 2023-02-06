@@ -97,9 +97,9 @@ impl Game {
             while let Some(event) = window.poll_event() {
                 match self.input.parse_input(event).unwrap() {
                     GameTasks::Close => self.is_stopped = true,
-                    //GameTasks::ClickPressed(button, x, y) => ,
-                    //GameTasks::ClickReleased(
-                    //GameTasks::MouseWheelScrolled(wheel, delta, x, y) => ,
+                    GameTasks::ClickPressed(_, x, y) => self.snowman_state = SnowmanStates::DeformationToAvoidPoint(x, y, current_frame),
+                    GameTasks::ClickReleased(_, x, y) => self.snowman_state = SnowmanStates::ReverseDeformationToAvoidPoint(x, y, current_frame),
+                    //GameTasks::MouseWheelScrolled(wheel, delta, x, y) => , // TODO: let the snowman grow!
                     GameTasks::Typed(key) => !todo!(),
                     _ => {}
                 }

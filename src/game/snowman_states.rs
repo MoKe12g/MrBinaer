@@ -25,7 +25,7 @@ pub enum SnowmanStates {
     MorphingFromAFirTree(i32),
     // the snowman dont want to be clicked on, so it transforms itself in a way,
     // that it isn't anywhere near the unpleasant mouse pointer (who likes to be clicked on anyway?)
-    DeformationToAvoidPoint(f32, f32, i32),
-    IsDeformedToAvoidPoint(f32, f32),
-    ReverseDeformationToAvoidPoint(f32, f32, i32),
+    DeformationToAvoidPoint(i32, i32, i32),
+    IsDeformedToAvoidPoint(i32, i32),
+    ReverseDeformationToAvoidPoint(i32, i32, i32),
 }
