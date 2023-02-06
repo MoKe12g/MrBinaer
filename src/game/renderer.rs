@@ -10,7 +10,7 @@ pub struct Renderer {
 }
 
 impl Renderer {
-    pub(crate) fn render(&self, window: &mut RenderWindow, player_input: &Vec<char>, current_frame: i32, snowman_state: SnowmanStates) {
+    pub(crate) fn render(&self, window: &mut RenderWindow, player_input: &Vec<u8>, solution: &String, current_frame: i32, snowman_state: SnowmanStates) {
         window.clear(Color::WHITE);
         // draw the snowman, we all love
         match snowman_state {
