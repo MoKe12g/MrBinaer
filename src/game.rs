@@ -1,4 +1,6 @@
-use sfml::graphics::RenderWindow;
+use std::ops::Deref;
+
+use sfml::graphics::{Font, RenderWindow};
 use sfml::system::{Clock, Vector2f};
 use sfml::window::Key;
 
@@ -21,6 +23,7 @@ pub struct Game {
     input: Input,
     renderer: Renderer,
     is_stopped: bool,
+    is_user_terminated: bool,
 }
 
 impl Game {
@@ -105,32 +108,44 @@ impl Game {
                     GameTasks::ClickReleased(_, x, y) => self.snowman_state = SnowmanStates::ReverseDeformationToAvoidPoint(x, y, current_frame),
                     //GameTasks::MouseWheelScrolled(wheel, delta, x, y) => , // TODO: let the snowman grow!
                     GameTasks::Typed(key) => {
-                        // where the game logic is hidden
-                        let input: u8 = match key {
-                            Key::NUM0 | Key::NUMPAD0 => 0,
-                            Key::NUM1 | Key::NUMPAD1 => 1,
-                            Key::NUM2 | Key::NUMPAD2 => 2,
-                            Key::NUM3 | Key::NUMPAD3 => 3,
-                            Key::NUM4 | Key::NUMPAD4 => 4,
-                            Key::NUM5 | Key::NUMPAD5 => 5,
-                            Key::NUM6 | Key::NUMPAD6 => 6,
-                            Key::NUM7 | Key::NUMPAD7 => 7,
-                            Key::NUM8 | Key::NUMPAD8 => 8,
-                            Key::NUM9 | Key::NUMPAD9 => 9,
-                            _ => 255, // for any other key, not bound to a event
-                        };
+                        if self.game_solution_binary.len() != self.player_input.len() {
+                            // where the game logic is hidden
+                            let input: u8 = match key {
+                                Key::NUM0 | Key::NUMPAD0 => 0,
+                                Key::NUM1 | Key::NUMPAD1 => 1,
+                                Key::NUM2 | Key::NUMPAD2 => 2,
+                                Key::NUM3 | Key::NUMPAD3 => 3,
+                                Key::NUM4 | Key::NUMPAD4 => 4,
+                                Key::NUM5 | Key::NUMPAD5 => 5,
+                                Key::NUM6 | Key::NUMPAD6 => 6,
+                                Key::NUM7 | Key::NUMPAD7 => 7,
+                                Key::NUM8 | Key::NUMPAD8 => 8,
+                                Key::NUM9 | Key::NUMPAD9 => 9,
+                                _ => 255, // for any other key, not bound to a event
+                            };
 
-                        if *self.game_solution_binary.get(self.player_input.len()).unwrap() == input {
-                            self.player_input.push(input);
-                            // TODO: Player guessed right event
-                            println!("You guessed right");
-                            if self.game_solution_binary.len() == self.player_input.len() {
-                                println!("Game ended, terminating...");
+                            if *self.game_solution_binary.get(self.player_input.len()).unwrap() == input {
+                                self.player_input.push(input);
+                                // TODO: Player guessed right event
+                                println!("You guessed right");
+                                if self.game_solution_binary.len() == self.player_input.len() {
+                                    println!("Game ended, terminating...");
+                                    self.is_stopped = true;
+                                }
+                            } else {
+                                // Todo: Player guessed wrong event
+                                println!("You guessed wrong");
+                            }
+                        }
+                        match key {
+                            Key::R => {
+                                self.is_stopped = true;
+                            },
+                            Key::Q => {
+                                self.is_user_terminated = true;
                                 self.is_stopped = true;
                             }
-                        } else {
-                            // Todo: Player guessed wrong event
-                            println!("You guessed wrong");
+                            _ => {}
                         }
                     },
                     _ => {}
@@ -159,16 +174,17 @@ impl Game {
     }
 
     pub fn got_closed_by_user(&self) -> bool {
-        return self.is_stopped;
+        return self.is_user_terminated;
     }
 }
 
 pub fn new(number: u8, snowman_animation_duration: i32) -> Game {
     // convert int to Vector of u8 holding single bits
     let mut game_solution: Vec<u8> = Vec::<u8>::with_capacity(8);
-    for i in 0..7 {
+    for i in 0..8 { // ???? 8 ????
         game_solution.push(number >> i & 1);
     }
+    game_solution.reverse(); // destroys your mind but is the only implemented solution
 
     // convert int to Vector of char
     let mut origin: Vec<char> = Vec::<char>::with_capacity(8);
@@ -187,5 +203,6 @@ pub fn new(number: u8, snowman_animation_duration: i32) -> Game {
         // TODO: Renderer initialization geht gar nicht
         renderer: renderer::new(Vector2f::new(0.0, 600.0), Vector2f::new(25.0, 25.0), snowman_animation_duration),
         is_stopped: false,
+        is_user_terminated: false,
     }
 }
