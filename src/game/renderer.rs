@@ -38,7 +38,7 @@ impl Renderer {
         // draw the snowman, we all love
         match snowman_state {
             SnowmanStates::Idle => window.draw(&get_snowman(self.snowman_pos.x, self.snowman_pos.y, self.snowman_scale.x, self.snowman_scale.y)),
-            SnowmanStates::Melting(animation_start) => window.draw(&get_snowman(self.snowman_pos.x, self.snowman_pos.y, self.snowman_scale.x, self.snowman_scale.y * ((current_frame - animation_start) as f32 / self.animation_duration as f32))),
+            SnowmanStates::Melting(animation_start) => window.draw(&get_snowman(self.snowman_pos.x, self.snowman_pos.y, self.snowman_scale.x, self.snowman_scale.y - self.snowman_scale.y * ((current_frame - animation_start) as f32 / self.animation_duration as f32))),
             SnowmanStates::Melted => window.draw(&get_snowman(self.snowman_pos.x, self.snowman_pos.y, self.snowman_scale.x, 0.0)),
             _ => println!("No rendering is defined for snowman_state"),
         }
@@ -47,7 +47,7 @@ impl Renderer {
     }
 }
 
-fn get_snowman(start_pos_x: f32, start_pos_y: f32, scale_x: f32, scale_y: f32) -> VertexArray {
+fn get_snowman(start_pos_x: f32, start_pos_y: f32, length_unit_x: f32, length_unit_y: f32) -> VertexArray {
     let snowman = [
         Vector2f::new(5.0, 8.0),
         Vector2f::new(5.0, 8.0),
@@ -72,9 +72,9 @@ fn get_snowman(start_pos_x: f32, start_pos_y: f32, scale_x: f32, scale_y: f32) -
 
     // ein Punkt ist zwar doppelt vorhanden,
     // dafür wird keine schwarze diagonale Linie von (0/0) nach snowman[0] gezeichnet
-    snowman_builder.append(&Vertex::new(Vector2f::new(start_pos_x + snowman[0].x * scale_x, start_pos_y - snowman[0].y * scale_y), Color::WHITE, Vector2f::new(0.0, 0.0)));
+    snowman_builder.append(&Vertex::new(Vector2f::new(start_pos_x + snowman[0].x * length_unit_x, start_pos_y - snowman[0].y * length_unit_y), Color::WHITE, Vector2f::new(0.0, 0.0)));
     for point in snowman {
-        snowman_builder.append(&Vertex::new(Vector2f::new(start_pos_x + point.x * scale_x, start_pos_y - point.y * scale_y), Color::BLACK, Vector2f::new(0.0, 0.0)))
+        snowman_builder.append(&Vertex::new(Vector2f::new(start_pos_x + point.x * length_unit_x, start_pos_y - point.y * length_unit_y), Color::BLACK, Vector2f::new(0.0, 0.0)))
     }
     return snowman_builder
 }
