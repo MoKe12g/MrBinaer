@@ -26,8 +26,7 @@ const SNOWMAN: [Vector2<f32>; 17] = [
     Vector2f::new(3.0, 8.0),
 ];
 
-const CHRISTMAS_TREE: [Vector2<f32>; 17] = [ // TODO: Fix
-    // TODO: Draw Christmas Tree with 17
+const CHRISTMAS_TREE: [Vector2<f32>; 17] = [
     Vector2f::new(4.0, 2.0 * 4.0 + 2.0),
     Vector2f::new(7.0, 1.0 * 4.0 + 2.0),
     Vector2f::new(4.0, 1.0 * 4.0 + 2.0),
@@ -89,8 +88,8 @@ impl Renderer {
             SnowmanStates::Idle => window.draw(&get_snowman(self.snowman_pos.x, self.snowman_pos.y, self.snowman_scale.x, self.snowman_scale.y)),
             SnowmanStates::Melting(animation_start) => window.draw(&get_snowman(self.snowman_pos.x, self.snowman_pos.y, self.snowman_scale.x, self.snowman_scale.y - self.snowman_scale.y * ((current_frame - animation_start) as f32 / self.animation_duration as f32))),
             SnowmanStates::Melted => window.draw(&get_snowman(self.snowman_pos.x, self.snowman_pos.y, self.snowman_scale.x, 0.0)),
-            SnowmanStates::MorphingIntoAFirTree(animation_start) => window.draw(&morph_into_christmas_tree(self.snowman_pos.x, self.snowman_pos.y, self.snowman_scale.x, 0.0, current_frame - animation_start)),
-            SnowmanStates::MorphingFromAFirTree(animation_start) => window.draw(&morph_from_christmas_tree(self.snowman_pos.x, self.snowman_pos.y, self.snowman_scale.x, 0.0, current_frame - animation_start)),
+            SnowmanStates::MorphingIntoAFirTree(animation_start) => window.draw(&morph_into_christmas_tree(self.snowman_pos.x, self.snowman_pos.y, self.snowman_scale.x, self.snowman_scale.y, current_frame - animation_start, self.animation_duration)),
+            SnowmanStates::MorphingFromAFirTree(animation_start) => window.draw(&morph_from_christmas_tree(self.snowman_pos.x, self.snowman_pos.y, self.snowman_scale.x, self.snowman_scale.y, current_frame - animation_start, self.animation_duration)),
             SnowmanStates::IsFirTree() => window.draw(&get_christmas_tree(self.snowman_pos.x, self.snowman_pos.y, self.snowman_scale.x, self.snowman_scale.y)),
             _ => println!("No rendering is defined for snowman_state"),
         }
@@ -99,27 +98,46 @@ impl Renderer {
     }
 }
 
-fn morph_into_christmas_tree(start_pos_x: f32, start_pos_y: f32, length_unit_x: f32, length_unit_y: f32, animation_frame: i32) -> VertexArray {
+fn morph_into_christmas_tree(start_pos_x: f32, start_pos_y: f32, length_unit_x: f32, length_unit_y: f32, animation_frame: i32, animation_duration: i32) -> VertexArray {
     let mut christmas_tree_generator = VertexArray::new(sfml::graphics::PrimitiveType::LINE_STRIP, SNOWMAN.len());
 
     // ein Punkt ist zwar doppelt vorhanden,
     // dafür wird keine schwarze diagonale Linie von (0/0) nach snowman[0] gezeichnet
-    christmas_tree_generator.append(&Vertex::new(Vector2f::new(start_pos_x + SNOWMAN[0].x * length_unit_x, start_pos_y - SNOWMAN[0].y * length_unit_y), Color::WHITE, Vector2f::new(0.0, 0.0)));
-    for point in mulVecArray(divVecArrayOfNumber(subVecArray(SNOWMAN, CHRISTMAS_TREE), 2.0), animation_frame as f32) {
-        christmas_tree_generator.append(&Vertex::new(Vector2f::new(start_pos_x + point.x * length_unit_x, start_pos_y - point.y * length_unit_y), Color::BLACK, Vector2f::new(0.0, 0.0)))
+    let mut first = true;
+    for point in add_vec_array(SNOWMAN, mul_vec_array(
+        div_vec_array_of_number(sub_vec_array(CHRISTMAS_TREE, SNOWMAN), animation_duration as f32),
+        animation_frame as f32)) {
+        if first {
+            christmas_tree_generator.append(&Vertex::new(
+                Vector2f::new(start_pos_x + point.x * length_unit_x, start_pos_y - point.y * length_unit_y),
+                Color::WHITE, Vector2f::new(0.0, 0.0)));
+            first = false;
+        }
+        christmas_tree_generator.append(&Vertex::new(
+            Vector2f::new(start_pos_x + point.x * length_unit_x, start_pos_y - point.y * length_unit_y),
+            Color::BLACK, Vector2f::new(0.0, 0.0)))
     }
     return christmas_tree_generator
 }
 
-fn morph_from_christmas_tree(start_pos_x: f32, start_pos_y: f32, length_unit_x: f32, length_unit_y: f32, animation_frame: i32) -> VertexArray {
+fn morph_from_christmas_tree(start_pos_x: f32, start_pos_y: f32, length_unit_x: f32, length_unit_y: f32, animation_frame: i32, animation_duration: i32) -> VertexArray {
     let mut snowman_generator = VertexArray::new(sfml::graphics::PrimitiveType::LINE_STRIP, SNOWMAN.len());
 
     // ein Punkt ist zwar doppelt vorhanden,
     // dafür wird keine schwarze diagonale Linie von (0/0) nach snowman[0] gezeichnet
-    let points = mulVecArray(divVecArrayOfNumber(subVecArray(CHRISTMAS_TREE, SNOWMAN), 2.0), animation_frame as f32);
-    snowman_generator.append(&Vertex::new(Vector2f::new(start_pos_x + points[0].x * length_unit_x, start_pos_y - points[0].y * length_unit_y), Color::WHITE, Vector2f::new(0.0, 0.0)));
-    for point in points {
-        snowman_generator.append(&Vertex::new(Vector2f::new(start_pos_x + point.x * length_unit_x, start_pos_y - point.y * length_unit_y), Color::BLACK, Vector2f::new(0.0, 0.0)))
+    let mut first = true;
+    for point in add_vec_array(CHRISTMAS_TREE, mul_vec_array(
+        div_vec_array_of_number(sub_vec_array(SNOWMAN, CHRISTMAS_TREE), animation_duration as f32),
+        animation_frame as f32)) {
+        if first {
+            snowman_generator.append(&Vertex::new(
+                Vector2f::new(start_pos_x + point.x * length_unit_x, start_pos_y - point.y * length_unit_y),
+                Color::WHITE, Vector2f::new(0.0, 0.0)));
+            first = false;
+        }
+        snowman_generator.append(&Vertex::new(
+            Vector2f::new(start_pos_x + point.x * length_unit_x, start_pos_y - point.y * length_unit_y),
+            Color::BLACK, Vector2f::new(0.0, 0.0)))
     }
     return snowman_generator
 }
@@ -148,50 +166,50 @@ fn get_snowman(start_pos_x: f32, start_pos_y: f32, length_unit_x: f32, length_un
     return snowman_builder
 }
 
-fn addVecArray(vecarray1: [Vector2<f32>; 17], vecarray2: [Vector2<f32>; 17]) -> [Vector2<f32>; 17] {
+fn add_vec_array(vecarray1: [Vector2<f32>; 17], vecarray2: [Vector2<f32>; 17]) -> [Vector2<f32>; 17] {
     let mut result = EMPTY;
     let mut i: usize = 0;
-    while i < vecarray1.len() + 1 {
+    while i < vecarray1.len() {
         result[i] = vecarray1[i] + vecarray2[i];
         i += 1;
     }
     return result
 }
 
-fn subVecArray(vecarray1: [Vector2<f32>; 17], vecarray2: [Vector2<f32>; 17]) -> [Vector2<f32>; 17] {
+fn sub_vec_array(vecarray1: [Vector2<f32>; 17], vecarray2: [Vector2<f32>; 17]) -> [Vector2<f32>; 17] {
     let mut result = EMPTY;
     let mut i: usize = 0;
-    while i < vecarray1.len() + 1 {
+    while i < vecarray1.len() {
         result[i] = vecarray1[i] - vecarray2[i];
         i += 1;
     }
     return result
 }
 
-fn divVecArray(vecarray1: [Vector2<f32>; 17], vecarray2: [Vector2<f32>; 17]) -> [Vector2<f32>; 17] {
+fn div_vec_array(vecarray1: [Vector2<f32>; 17], vecarray2: [Vector2<f32>; 17]) -> [Vector2<f32>; 17] {
     let mut result = EMPTY;
     let mut i: usize = 0;
-    while i < vecarray1.len() + 1 {
+    while i < vecarray1.len() {
         result[i] = vecarray1[i] / vecarray2[i];
         i += 1;
     }
     return result
 }
 
-fn divVecArrayOfNumber(vecarray1: [Vector2<f32>; 17], number: f32) -> [Vector2<f32>; 17] {
+fn div_vec_array_of_number(vecarray1: [Vector2<f32>; 17], number: f32) -> [Vector2<f32>; 17] {
     let mut result = EMPTY;
     let mut i: usize = 0;
-    while i < vecarray1.len() + 1 {
+    while i < vecarray1.len() {
         result[i] = vecarray1[i] / number;
         i += 1;
     }
     return result
 }
 
-fn mulVecArray(vecarray: [Vector2<f32>; 17], multiplier: f32) -> [Vector2<f32>; 17] {
+fn mul_vec_array(vecarray: [Vector2<f32>; 17], multiplier: f32) -> [Vector2<f32>; 17] {
     let mut result = EMPTY;
     let mut i: usize = 0;
-    while i < vecarray.len() + 1 {
+    while i < vecarray.len() {
         result[i] = vecarray[i] * multiplier;
         i += 1;
     }

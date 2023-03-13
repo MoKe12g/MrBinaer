@@ -1,6 +1,4 @@
-use std::ops::Deref;
-
-use sfml::graphics::{Font, RenderWindow};
+use sfml::graphics::RenderWindow;
 use sfml::system::{Clock, Vector2f};
 use sfml::window::Key;
 
@@ -86,7 +84,10 @@ impl Game {
                 }
                 SnowmanStates::MorphingFromAFirTree(start_frame) => {
                     if current_frame - start_frame >= self.snowman_animation_duration {
-                        self.snowman_state = SnowmanStates::Idle
+                        self.snowman_state = SnowmanStates::Idle;
+                        // exit game
+                        println!("Game ended, terminating...");
+                        self.is_stopped = true;
                     }
                 }
                 SnowmanStates::DeformationToAvoidPoint(px, py, start_frame) => {
@@ -105,7 +106,13 @@ impl Game {
             while let Some(event) = window.poll_event() {
                 match self.input.parse_input(event).unwrap() {
                     GameTasks::Close => self.is_stopped = true,
-                    GameTasks::ClickPressed(_, x, y) => self.snowman_state = SnowmanStates::DeformationToAvoidPoint(x, y, current_frame),
+                    GameTasks::ClickPressed(_, x, y) => {
+                        if self.snowman_state != SnowmanStates::IsFirTree() {
+                            self.snowman_state = SnowmanStates::DeformationToAvoidPoint(x, y, current_frame)
+                        } else {
+                            self.snowman_state = SnowmanStates::MorphingFromAFirTree(current_frame);
+                        }
+                    },
                     GameTasks::ClickReleased(_, x, y) => self.snowman_state = SnowmanStates::ReverseDeformationToAvoidPoint(x, y, current_frame),
                     //GameTasks::MouseWheelScrolled(wheel, delta, x, y) => , // TODO: let the snowman grow!
                     GameTasks::Typed(key) => {
@@ -125,18 +132,21 @@ impl Game {
                                 _ => 255, // for any other key, not bound to a event
                             };
 
-                            if *self.game_solution_binary.get(self.player_input.len()).unwrap() == input {
+                            if *self.game_solution_binary.get(self.player_input.len()).unwrap() == input && self.snowman_state != SnowmanStates::IsFirTree() {
                                 self.player_input.push(input);
                                 // TODO: Player guessed right event
                                 println!("You guessed right");
                                 if self.game_solution_binary.len() == self.player_input.len() {
-                                    println!("Game ended, terminating...");
-                                    self.is_stopped = true;
+                                    println!("Game ended, playing win animation");
+                                    self.snowman_state = SnowmanStates::MorphingIntoAFirTree(current_frame);
+                                    // exiting this FirTree Morph exits the game
                                 }
                             } else {
                                 // Todo: Player guessed wrong event
                                 println!("You guessed wrong");
                             }
+                        } else if self.snowman_state == SnowmanStates::IsFirTree() {
+                            self.snowman_state = SnowmanStates::MorphingFromAFirTree(current_frame);
                         }
                         match key {
                             Key::R => {
