@@ -72,13 +72,14 @@ impl Renderer {
         let text_input = Vec::<Text>::with_capacity(8);
         for i in 0..(text_input.capacity()) { // TODO: Wie funktionieren Ranges???
             let wrapped = &player_input.get(i);
+            let mut text = "_".to_string();
             if wrapped.is_some() {
-                let text = &player_input.get(i).unwrap().to_string();
-                let mut text_input_build = Text::new(text, self.font.deref(), 25);
-                text_input_build.set_fill_color(Color::BLACK);
-                text_input_build.set_position(Vector2f::new((window.size().x / 4) as f32 + (50 * i) as f32, 500.0));
-                window.draw(&text_input_build);
+                text = player_input.get(i).unwrap().to_string();
             }
+                let mut text_input_build = Text::new(text.deref(), self.font.deref(), 25);
+                text_input_build.set_fill_color(Color::BLACK);
+                text_input_build.set_position(Vector2f::new(window.size().x as f32 / 3.25 + (70 * i) as f32, 500.0));
+                window.draw(&text_input_build);
         }
 
         window.draw(&text_origin);
