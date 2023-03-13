@@ -76,10 +76,15 @@ impl Renderer {
             if wrapped.is_some() {
                 text = player_input.get(i).unwrap().to_string();
             }
-                let mut text_input_build = Text::new(text.deref(), self.font.deref(), 25);
-                text_input_build.set_fill_color(Color::BLACK);
-                text_input_build.set_position(Vector2f::new(window.size().x as f32 / 3.25 + (70 * i) as f32, 500.0));
-                window.draw(&text_input_build);
+            let mut text_input_build = Text::new(text.deref(), self.font.deref(), 25);
+            text_input_build.set_fill_color(Color::BLACK);
+            text_input_build.set_position(Vector2f::new(window.size().x as f32 / 3.25 + (70 * i) as f32, 500.0));
+            window.draw(&text_input_build);
+
+            let mut help_text = Text::new(format!("{}", (2_i32.pow((7 - i) as u32))).deref(), self.font.deref(), 25);
+            help_text.set_fill_color(Color::BLACK);
+            help_text.set_position(Vector2f::new(window.size().x as f32 / 3.25 + (70.0 * i as f32), 550.0));
+            window.draw(&help_text);
         }
 
         window.draw(&text_origin);
