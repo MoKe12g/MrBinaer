@@ -212,7 +212,7 @@ pub fn new(number: u8, snowman_animation_duration: i32) -> Game {
         snowman_animation_duration,
         input: input::new(),
         // TODO: Renderer initialization geht gar nicht
-        renderer: renderer::new(Vector2f::new(0.0, 600.0), Vector2f::new(25.0, 25.0), snowman_animation_duration),
+        renderer: renderer::new(Vector2f::new(0.0, 600.0), snowman_animation_duration),
         is_stopped: false,
         is_user_terminated: false,
     }

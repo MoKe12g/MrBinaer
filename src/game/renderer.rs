@@ -1,4 +1,4 @@
-use std::ops::Deref;
+use std::ops::{Add, Deref};
 
 use sfml::graphics::{Color, Font, RenderTarget, RenderWindow, Text, Transformable, Vertex, VertexArray};
 use sfml::SfBox;
@@ -56,13 +56,12 @@ const EMPTY: [Vector2<f32>; 17] = [Vector2f::new(0.0, 0.0), Vector2f::new(0.0, 0
 
 pub struct Renderer {
     snowman_pos: Vector2f,
-    snowman_scale: Vector2f,
     animation_duration: i32,
     font: SfBox<Font>,
 }
 
 impl Renderer {
-    pub(crate) fn render(&self, window: &mut RenderWindow, player_input: &Vec<u8>, origin: &String, current_frame: i32, snowman_state: SnowmanStates) {
+    pub(crate) fn render(&mut self, window: &mut RenderWindow, player_input: &Vec<u8>, origin: &String, current_frame: i32, snowman_state: SnowmanStates) {
         window.clear(Color::WHITE);
         // draw origin (the number to be converted)
         let mut text_origin = Text::new(origin, self.font.deref(), 200);
@@ -89,14 +88,16 @@ impl Renderer {
 
         window.draw(&text_origin);
 
+        let snowman_scale = Vector2f::new(25.0, 25.0 + f32::sin(current_frame as f32 / 150.0) * 1.5);
+
         // draw the snowman, we all love
         match snowman_state {
-            SnowmanStates::Idle => window.draw(&get_snowman(self.snowman_pos.x, self.snowman_pos.y, self.snowman_scale.x, self.snowman_scale.y)),
-            SnowmanStates::Melting(animation_start) => window.draw(&get_snowman(self.snowman_pos.x, self.snowman_pos.y, self.snowman_scale.x, self.snowman_scale.y - self.snowman_scale.y * ((current_frame - animation_start) as f32 / self.animation_duration as f32))),
-            SnowmanStates::Melted => window.draw(&get_snowman(self.snowman_pos.x, self.snowman_pos.y, self.snowman_scale.x, 0.0)),
-            SnowmanStates::MorphingIntoAFirTree(animation_start) => window.draw(&morph_into_christmas_tree(self.snowman_pos.x, self.snowman_pos.y, self.snowman_scale.x, self.snowman_scale.y, current_frame - animation_start, self.animation_duration)),
-            SnowmanStates::MorphingFromAFirTree(animation_start) => window.draw(&morph_from_christmas_tree(self.snowman_pos.x, self.snowman_pos.y, self.snowman_scale.x, self.snowman_scale.y, current_frame - animation_start, self.animation_duration)),
-            SnowmanStates::IsFirTree() => window.draw(&get_christmas_tree(self.snowman_pos.x, self.snowman_pos.y, self.snowman_scale.x, self.snowman_scale.y)),
+            SnowmanStates::Idle => window.draw(&get_snowman(self.snowman_pos.x, self.snowman_pos.y, snowman_scale.x, snowman_scale.y)),
+            SnowmanStates::Melting(animation_start) => window.draw(&get_snowman(self.snowman_pos.x, self.snowman_pos.y, snowman_scale.x, snowman_scale.y - snowman_scale.y * ((current_frame - animation_start) as f32 / self.animation_duration as f32))),
+            SnowmanStates::Melted => window.draw(&get_snowman(self.snowman_pos.x, self.snowman_pos.y, snowman_scale.x, 0.0)),
+            SnowmanStates::MorphingIntoAFirTree(animation_start) => window.draw(&morph_into_christmas_tree(self.snowman_pos.x, self.snowman_pos.y, snowman_scale.x, snowman_scale.y, current_frame - animation_start, self.animation_duration)),
+            SnowmanStates::MorphingFromAFirTree(animation_start) => window.draw(&morph_from_christmas_tree(self.snowman_pos.x, self.snowman_pos.y, snowman_scale.x, snowman_scale.y, current_frame - animation_start, self.animation_duration)),
+            SnowmanStates::IsFirTree() => window.draw(&get_christmas_tree(self.snowman_pos.x, self.snowman_pos.y, snowman_scale.x, snowman_scale.y)),
             _ => println!("No rendering is defined for snowman_state"),
         }
 
@@ -224,13 +225,12 @@ fn mul_vec_array(vecarray: [Vector2<f32>; 17], multiplier: f32) -> [Vector2<f32>
 
 impl Renderer {}
 
-pub fn new(snowman_pos: Vector2f, snowman_scale: Vector2f, animation_duration: i32) -> Renderer {
+pub fn new(snowman_pos: Vector2f, animation_duration: i32) -> Renderer {
     // load font
     let font = Font::from_file("font.ttf").unwrap();
 
     Renderer {
         snowman_pos,
-        snowman_scale,
         animation_duration,
         font,
     }
