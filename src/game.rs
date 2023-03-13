@@ -13,6 +13,7 @@ mod input;
 mod game_tasks;
 mod snowman_states;
 mod renderer;
+mod point_hoap;
 
 pub struct Game {
     origin: Vec<char>,
@@ -154,9 +155,9 @@ impl Game {
 
             // snowman idle generator
             if self.snowman_state == SnowmanStates::Idle {
-                if rand::random::<i8>() == 0 {
+                /*if rand::random::<i8>() == 0 {
                     self.snowman_state = SnowmanStates::Melting(current_frame);
-                }
+                }*/
             }
             self.renderer.render(window, &self.player_input, &origin_string, current_frame, self.snowman_state);
 
