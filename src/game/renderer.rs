@@ -113,9 +113,18 @@ impl Renderer {
                     snowman_scale = Vector2f::new(snowman_scale.x, 0.0);
                     get_snowman()
                 },
-                SnowmanStates::MorphingIntoAFirTree(animation_start) => morph_into_christmas_tree(current_frame - animation_start, self.animation_duration),
-                SnowmanStates::MorphingFromAFirTree(animation_start) => morph_from_christmas_tree(current_frame - animation_start, self.animation_duration),
-                SnowmanStates::IsFirTree() => get_christmas_tree(),
+                SnowmanStates::MorphingIntoAFirTree(animation_start) => {
+                    snowman_scale = Vector2f::new(snowman_scale.x, snowman_scale.y + (((current_frame as f32 / 64.0).sin() * 7.0) * ((current_frame as f32 / 64.0).tan() + 1.0 * 3.0) + (((current_frame as f32).sin()) * 0.05)) / self.animation_duration as f32 * (current_frame - animation_start) as f32);
+                    morph_into_christmas_tree(current_frame - animation_start, self.animation_duration)
+                },
+                SnowmanStates::MorphingFromAFirTree(animation_start) => {
+                    snowman_scale = Vector2f::new(snowman_scale.x, snowman_scale.y + (((current_frame as f32 / 64.0).sin() * 7.0) * ((current_frame as f32 / 64.0).tan() + 1.0 * 3.0) + (((current_frame as f32).sin()) * 0.05)) / self.animation_duration as f32 * (animation_start - current_frame - animation_start) as f32);
+                    morph_from_christmas_tree(current_frame - animation_start, self.animation_duration)
+                },
+                SnowmanStates::IsFirTree() => {
+                    snowman_scale = Vector2f::new(snowman_scale.x, snowman_scale.y + ((current_frame as f32 / 64.0).sin() * 7.0) * ((current_frame as f32 / 64.0).tan() + 1.0 * 3.0) + (((current_frame as f32).sin()) * 0.05));
+                    get_christmas_tree()
+                },
                 _ => {
                     println!("No rendering is defined for snowman_state");
                     EMPTY.to_vec()
