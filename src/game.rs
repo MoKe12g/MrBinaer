@@ -105,7 +105,10 @@ impl Game {
 
             while let Some(event) = window.poll_event() {
                 match self.input.parse_input(event).unwrap() {
-                    GameTasks::Close => self.is_stopped = true,
+                    GameTasks::Close => {
+                        self.is_user_terminated = true;
+                        self.is_stopped = true;
+                    },
                     GameTasks::ClickPressed(_, x, y) => {
                         if self.snowman_state != SnowmanStates::IsFirTree() {
                             self.snowman_state = SnowmanStates::DeformationToAvoidPoint(x, y, current_frame)
