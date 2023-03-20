@@ -114,15 +114,15 @@ impl Renderer {
                     get_snowman()
                 },
                 SnowmanStates::MorphingIntoAFirTree(animation_start) => {
-                    snowman_scale = Vector2f::new(snowman_scale.x, snowman_scale.y + dancing_amplifier(current_frame, self.animation_duration) * (current_frame - animation_start) as f32);
+                    snowman_scale = Vector2f::new(snowman_scale.x, snowman_scale.y + (((current_frame as f32 / 64.0).sin() * 7.0) * ((current_frame as f32 / 64.0).tan() + 1.0 * 3.0) + (((current_frame as f32).sin()) * 0.05)) / self.animation_duration as f32 * (current_frame - animation_start) as f32);
                     morph_into_christmas_tree(current_frame - animation_start, self.animation_duration)
                 },
                 SnowmanStates::MorphingFromAFirTree(animation_start) => {
-                    snowman_scale = Vector2f::new(snowman_scale.x, snowman_scale.y + dancing_amplifier(current_frame, self.animation_duration) * (animation_start - current_frame - animation_start) as f32);
+                    snowman_scale = Vector2f::new(snowman_scale.x, snowman_scale.y + (((current_frame as f32 / 64.0).sin() * 7.0) * ((current_frame as f32 / 64.0).tan() + 1.0 * 3.0) + (((current_frame as f32).sin()) * 0.05)) / self.animation_duration as f32 * (animation_start - current_frame - animation_start) as f32);
                     morph_from_christmas_tree(current_frame - animation_start, self.animation_duration)
                 },
                 SnowmanStates::IsFirTree() => {
-                    snowman_scale = Vector2f::new(snowman_scale.x, snowman_scale.y + dancing_amplifier(current_frame, self.animation_duration));
+                    snowman_scale = Vector2f::new(snowman_scale.x, snowman_scale.y + ((current_frame as f32 / 64.0).sin() * 7.0) * ((current_frame as f32 / 64.0).tan() + 1.0 * 3.0) + (((current_frame as f32).sin()) * 0.05));
                     get_christmas_tree()
                 },
                 _ => {
@@ -187,10 +187,6 @@ impl Renderer {
 
         window.display();
     }
-}
-
-fn dancing_amplifier(current_frame: i32, animation_duration: i32) -> f32 {
-    (((current_frame as f32 / 64.0).sin() * 7.0) * ((current_frame as f32 / 64.0).tan() + 1.0 * 3.0) + (((current_frame as f32).sin()) * 0.05)) / animation_duration as f32
 }
 
 fn get_snowman_arm(snowman: &Vec<Vector2f>) -> Vector2f {
