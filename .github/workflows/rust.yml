@@ -30,36 +30,4 @@ jobs:
         with:
           files: 'target/release/mr_binaer'
           repo-token: ${{ secrets.GITHUB_TOKEN}}
-          name: Rust
-
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-
-env:
-  CARGO_TERM_COLOR: always
-
-jobs:
-  build:
-
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-      - name: update repositories
-        run: sudo apt update -y
-      - name: Install dependencies
-        run: sudo apt install libsfml-dev libcsfml-dev cargo rustc wget  -y
-      - name: Download Font
-        run: wget https://github.com/mrtuxa/hack-ttf/raw/main/Hack-Regular.ttf -o Font.ttf
-      - name: Build Game
-        run: cargo build --release
-      - uses: AButler/upload-release-assets@v2.0
-        with:
-          files: 'target/release/mr_binaer'
-          repo-token: ${{ secrets.GITHUB_TOKEN}}
           release-tag: v0.1.0-linux-x86_64
