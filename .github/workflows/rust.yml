@@ -24,8 +24,6 @@ jobs:
         run: wget https://github.com/mrtuxa/hack-ttf/raw/main/Hack-Regular.ttf -o Font.ttf
       - name: Build Game
         run: cargo build --release
-      - name: Build Artifact
-        run: mkdir MrBinaer && cd MrBinaer && wget https://github.com/mrtuxa/MrBinaer/releases/download/generic-linux-desktop-file/mrbinaer.desktop && cp ../target/release/mr_binaer . && zip -r mr_binaer.zip MrBinaer/
       - name: Create release
         uses: actions/create-release@v1
         id: create_release
