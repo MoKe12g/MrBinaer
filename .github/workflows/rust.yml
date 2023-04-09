@@ -26,7 +26,7 @@ jobs:
         run: sudo apt update -y
       - name: Install dependencies
         run: sudo apt install libsfml-dev libcsfml-dev cargo rustc wget  -y
-      - name: Download Font
+      - name: Download font
         run: wget https://github.com/mrtuxa/hack-ttf/raw/main/Hack-Regular.ttf -o Font.ttf
       - name: Build Game
         run: cargo build --release
@@ -40,7 +40,7 @@ jobs:
           release_name: "MrBinaer v0.1.0 x86_64 Linux"
         env:
           GITHUB_TOKEN: ${{ github.token }}
-      - name: Upload linux artifact
+      - name: Upload Linux artifact
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
