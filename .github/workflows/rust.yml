@@ -15,21 +15,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: update repositories
-      run: sudo apt update -y
-    - name: Install dependencies
-      run: sudo apt install libsfml-dev libcsfml-dev cargo rustc wget  -y
-    - name: Download Font
-      run: wget https://github.com/mrtuxa/hack-ttf/raw/main/Hack-Regular.ttf -o Font.ttf
-    - name: Build Game
-      run: cargo build --release
-    - name: Upload binaries to release
-      uses: svenstaro/upload-release-action@v2
-      with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: target/release/mr_binaer
-        asset_name: mr_binaer
-        tag: ${{ github.ref }}
-        overwrite: true
-        body: "MrBinaer"
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: update repositories
+        run: sudo apt update -y
+      - name: Install dependencies
+        run: sudo apt install libsfml-dev libcsfml-dev cargo rustc wget  -y
+      - name: Download Font
+        run: wget https://github.com/mrtuxa/hack-ttf/raw/main/Hack-Regular.ttf -o Font.ttf
+      - name: Build Game
+        run: cargo build --release
+      - uses: AButler/upload-release-assets@v2.0
+        with:
+          files: 'target/release/mr_binaer'
+          repo-token: ${{ secrets.GITHUB_TOKEN}}
