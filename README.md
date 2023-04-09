@@ -12,4 +12,5 @@ sudo mkdir -pv /usr/share/mrbinaer
 sudo mv mr_binaer /usr/share/mrbinaer
 wget https://github.com/mrtuxa/hack-ttf/raw/main/Hack-Regular.ttf
 sudo mv Hack-Regular.ttf /usr/share/mrbinaer/font.ttf
+sudo chmod +x /usr/share/mrbinaer/mr_binaer
 ```
