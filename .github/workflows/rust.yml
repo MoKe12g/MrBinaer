@@ -17,9 +17,9 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: update repositories
-      run: apt update -y
+      run: sudo apt update -y
     - name: Install dependencies
-      run: apt install libsfml-dev libcsfml-dev cargo rustc wget  -y
+      run: sudo apt install libsfml-dev libcsfml-dev cargo rustc wget  -y
     - name: Download Font
       run: wget https://github.com/mrtuxa/hack-ttf/raw/main/Hack-Regular.ttf -o Font.ttf
     - name: Build Game
