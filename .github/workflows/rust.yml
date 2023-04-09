@@ -7,6 +7,7 @@ on:
     branches: [ "main" ]
   workflow_dispatch:
 
+
 env:
   CARGO_TERM_COLOR: always
 
@@ -27,8 +28,19 @@ jobs:
         run: wget https://github.com/mrtuxa/hack-ttf/raw/main/Hack-Regular.ttf -o Font.ttf
       - name: Build Game
         run: cargo build --release
-      - uses: AButler/upload-release-assets@v2.0
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: 'target/release/mr_binaer'
-          repo-token: ${{ secrets.GITHUB_TOKEN}}
-          release-tag: v0.1.0-linux-x86_64
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+      - name: Upload MrBinaer x86_64
+        uses: alexellis/upload-assets@0.4.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          asset_paths: '["./target/release/mr_binaer"]'
