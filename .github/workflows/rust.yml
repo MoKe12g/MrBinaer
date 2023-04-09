@@ -1,0 +1,45 @@
+name: Rust
+
+on:
+  workflow_dispatch:
+
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions: write-all
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: update repositories
+        run: sudo apt update -y
+      - name: Install dependencies
+        run: sudo apt install libsfml-dev libcsfml-dev cargo rustc wget  -y
+      - name: Download font
+        run: wget https://github.com/mrtuxa/hack-ttf/raw/main/Hack-Regular.ttf -o Font.ttf
+      - name: Build Game
+        run: cargo build --release
+      - name: Create release
+        uses: actions/create-release@v1
+        id: create_release
+        with:
+          draft: false
+          prerelease: false
+          tag_name: "v0.1.0-linux-86_64"
+          release_name: "MrBinaer v0.1.0 x86_64 Linux"
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Upload Linux artifact
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./target/release/mr_binaer
+          asset_name: mr_binaer
+          asset_content_type: application/x-binary
