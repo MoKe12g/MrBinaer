@@ -122,16 +122,16 @@ impl Game {
                         if self.game_solution_binary.len() != self.player_input.len() {
                             // where the game logic is hidden
                             let input: u8 = match key {
-                                Key::NUM0 | Key::NUMPAD0 => 0,
-                                Key::NUM1 | Key::NUMPAD1 => 1,
-                                Key::NUM2 | Key::NUMPAD2 => 2,
-                                Key::NUM3 | Key::NUMPAD3 => 3,
-                                Key::NUM4 | Key::NUMPAD4 => 4,
-                                Key::NUM5 | Key::NUMPAD5 => 5,
-                                Key::NUM6 | Key::NUMPAD6 => 6,
-                                Key::NUM7 | Key::NUMPAD7 => 7,
-                                Key::NUM8 | Key::NUMPAD8 => 8,
-                                Key::NUM9 | Key::NUMPAD9 => 9,
+                                Key::Num0 | Key::Numpad0 => 0,
+                                Key::Num1 | Key::Numpad1 => 1,
+                                Key::Num2 | Key::Numpad2 => 2,
+                                Key::Num3 | Key::Numpad3 => 3,
+                                Key::Num4 | Key::Numpad4 => 4,
+                                Key::Num5 | Key::Numpad5 => 5,
+                                Key::Num6 | Key::Numpad6 => 6,
+                                Key::Num7 | Key::Numpad7 => 7,
+                                Key::Num8 | Key::Numpad8 => 8,
+                                Key::Num9 | Key::Numpad9 => 9,
                                 _ => 255, // for any other key, not bound to a event
                             };
 

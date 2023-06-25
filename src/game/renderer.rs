@@ -1,6 +1,6 @@
 use std::ops::{Add, Deref};
 
-use sfml::graphics::{Color, Font, RenderTarget, RenderWindow, Text, Transformable, Vertex, VertexArray};
+use sfml::graphics::{Color, Font, RenderTarget, RenderWindow, Text, Transformable, Vertex, VertexBuffer, VertexBufferUsage};
 use sfml::SfBox;
 use sfml::system::{Vector2, Vector2f};
 
@@ -131,16 +131,18 @@ impl Renderer {
                 },
             };
         {
-            // create VertexArray from drawing
+            // create VertexBuffer from vertexes
             // +1 because we have to add another white vertex to hide the origin
-            let mut drawing = VertexArray::new(sfml::graphics::PrimitiveType::LINE_STRIP, snowman.len() + 1);
-            drawing.append(&Vertex::new(
+            let mut offset = 0;
+            let mut drawing = VertexBuffer::new(sfml::graphics::PrimitiveType::LINE_STRIP, (snowman.len() + 1) as u32, VertexBufferUsage::STREAM);
+            drawing.update(&[Vertex::new(
                 Vector2f::new(self.snowman_pos.x + snowman[0].x * snowman_scale.x, self.snowman_pos.y - snowman[0].y * snowman_scale.y),
-                Color::WHITE, Vector2f::new(0.0, 0.0)));
+                Color::WHITE, Vector2f::new(0.0, 0.0))], offset);
             for point in &snowman {
-                drawing.append(&Vertex::new(
+                offset += 1;
+                drawing.update(&[Vertex::new(
                     Vector2f::new(self.snowman_pos.x + point.x * snowman_scale.x, self.snowman_pos.y - point.y * snowman_scale.y),
-                    Color::BLACK, Vector2f::new(0.0, 0.0)))
+                    Color::BLACK, Vector2f::new(0.0, 0.0))], offset);
             }
             window.draw(&drawing);
         }
@@ -165,22 +167,24 @@ impl Renderer {
             { self.hat_right = Vector2f::new(self.hat_right.x, max_right_hat_pos_y) } else { self.hat_right = Vector2f::new(self.hat_right.x, self.hat_right.y - 0.055); }
 
             // draw hat to window
-            let mut hat = VertexArray::new(sfml::graphics::PrimitiveType::LINE_STRIP, HAT.len());
+            let mut offset = 0;
+            let mut hat = VertexBuffer::new(sfml::graphics::PrimitiveType::LINE_STRIP, (HAT.len() + 1) as u32, VertexBufferUsage::STREAM);
             let modifier = (self.hat_right.y - self.hat_left.y) / (self.hat_right.x - self.hat_left.x);
 
-            hat.append(&Vertex::new(
+            hat.update(&[Vertex::new(
                 Vector2f::new(
                     self.snowman_pos.x + (hat_holding_modifier.x + self.hat_left.x + HAT[0].x) * snowman_scale.x,
                     self.snowman_pos.y - ((self.hat_left.y + hat_holding_modifier.y + HAT[0].y + (modifier * (HAT[0].x))) * snowman_scale.y),
                 ),
-                Color::WHITE, Vector2f::new(0.0, 0.0)));
+                Color::WHITE, Vector2f::new(0.0, 0.0))], offset);
             for point in HAT {
-                hat.append(&Vertex::new(
+                offset += 1;
+                hat.update(&[Vertex::new(
                     Vector2f::new(
                         self.snowman_pos.x + (hat_holding_modifier.x + self.hat_left.x + point.x) * snowman_scale.x,
                         self.snowman_pos.y - ((self.hat_left.y + hat_holding_modifier.y + point.y + (modifier * (point.x))) * snowman_scale.y),
                     ),
-                    Color::BLACK, Vector2f::new(0.0, 0.0)));
+                    Color::BLACK, Vector2f::new(0.0, 0.0))], offset);
             }
             window.draw(&hat);
         }
@@ -298,7 +302,8 @@ fn div_vec_array(vecarray1: [Vector2f; 17], vecarray2: [Vector2f; 17]) -> [Vecto
     let mut result = EMPTY;
     let mut i: usize = 0;
     while i < vecarray1.len() {
-        result[i] = vecarray1[i] / vecarray2[i];
+        result[i].x = vecarray1[i].x / vecarray2[i].x;
+        result[i].y = vecarray1[i].y / vecarray2[i].y;
         i += 1;
     }
     return result
